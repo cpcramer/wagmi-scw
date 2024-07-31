@@ -13,3 +13,4 @@ To use:
 1. click "Coinbase wallet" button
 2. create a new wallet, or use an existing one
 3. transact! Click "mint" and use your new smart wallet on Base Sepolia.
+https://github.com/wilsoncusack/wagmi-scw/pull/20#issue-2341002455
