@@ -1,15 +1,11 @@
 import { useAccount } from "wagmi";
-import { useCapabilities, useWriteContracts } from "wagmi/experimental";
-import { useMemo, useState } from "react";
-import { CallStatus } from "./CallStatus";
+import { useCapabilities } from "wagmi/experimental";
+import { useMemo } from "react";
 import { myNFTABI, myNFTAddress } from "@/ABIs/myNFT";
+import { TransactButton } from "./TransactButton";
 
 export function TransactWithPaymaster() {
   const account = useAccount();
-  const [id, setId] = useState<string | undefined>(undefined);
-  const { writeContracts } = useWriteContracts({
-    mutation: { onSuccess: (id) => setId(id) },
-  });
   const { data: availableCapabilities } = useCapabilities({
     account: account.address,
   });
@@ -22,34 +18,30 @@ export function TransactWithPaymaster() {
     ) {
       return {
         paymasterService: {
-          url: process.env.PAYMASTER_PROXY_SERVER_URL || `${document.location.origin}/api/paymaster`,
+          url:
+            process.env.PAYMASTER_PROXY_SERVER_URL ||
+            `${document.location.origin}/api/paymaster`,
         },
       };
     }
-  }, [availableCapabilities]);
+  }, [availableCapabilities, account.chainId]);
 
   return (
     <div>
       <h2>Transact With Paymaster</h2>
       <div>
-        <button
-          onClick={() => {
-            writeContracts({
-              contracts: [
-                {
-                  address: myNFTAddress,
-                  abi: myNFTABI,
-                  functionName: "safeMint",
-                  args: [account.address],
-                },
-              ],
-              capabilities,
-            });
-          }}
-        >
-          Mint
-        </button>
-        {id && <CallStatus id={id} />}
+        <TransactButton
+          text="Mint"
+          contracts={[
+            {
+              address: myNFTAddress,
+              abi: myNFTABI,
+              functionName: "safeMint",
+              args: [account.address],
+            },
+          ]}
+          capabilities={capabilities}
+        />
       </div>
     </div>
   );
